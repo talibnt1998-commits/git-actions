@@ -1,0 +1,46 @@
+name: Auto Create PR on Push
+
+on:
+  push:
+    branches:
+      - '**'          # trigger on any branch push
+      - '!main'       # except main
+      - '!master'     # except master
+
+jobs:
+  create-pull-request:
+    name: Create Pull Request
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          title: "PR: ${{ github.ref_name }} → main"
+          body: |
+            ## 🚀 Auto-generated Pull Request
+
+            **Branch:** `${{ github.ref_name }}`
+            **Triggered by commit:** `${{ github.sha }}`
+            **Author:** ${{ github.actor }}
+
+            ---
+            ### Commit Message
+            ${{ github.event.head_commit.message }}
+
+            ---
+            > ⚠️ Please review the changes before merging.
+          labels: auto-pr
+          draft: false
+          delete-branch: false
