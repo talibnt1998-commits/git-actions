@@ -44,6 +44,8 @@ jobs:
             --head "$BRANCH" \
             --title "PR: $BRANCH → main" \
             --label auto-pr \
+            --assignee Salmanitalib,talibnt1998-commits \
+            --reviewer Salmanitalib,talibnt1998-commits \
             --body "$(cat <<EOF
           ## 🚀 Auto-generated Pull Request
 
