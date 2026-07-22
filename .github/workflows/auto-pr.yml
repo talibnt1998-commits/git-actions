@@ -13,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write
+      contents: read
+      issues: write
       pull-requests: write
 
     steps:
@@ -22,25 +23,39 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          title: "PR: ${{ github.ref_name }} → main"
-          body: |
-            ## 🚀 Auto-generated Pull Request
+      - name: Create or update Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ github.ref_name }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          # Ensure the auto-pr label exists (ignore error if it already does)
+          gh label create auto-pr --color 0E8A16 --description "Auto-generated PR" 2>/dev/null || true
 
-            **Branch:** `${{ github.ref_name }}`
-            **Triggered by commit:** `${{ github.sha }}`
-            **Author:** ${{ github.actor }}
+          # Skip if a PR from this branch into main is already open
+          existing=$(gh pr list --head "$BRANCH" --base main --state open --json number --jq 'length')
+          if [ "$existing" -gt 0 ]; then
+            echo "An open PR for '$BRANCH' → main already exists. Nothing to do."
+            exit 0
+          fi
 
-            ---
-            ### Commit Message
-            ${{ github.event.head_commit.message }}
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "PR: $BRANCH → main" \
+            --label auto-pr \
+            --body "$(cat <<EOF
+          ## 🚀 Auto-generated Pull Request
 
-            ---
-            > ⚠️ Please review the changes before merging.
-          labels: auto-pr
-          draft: false
-          delete-branch: false
+          **Branch:** \`$BRANCH\`
+          **Triggered by commit:** \`${{ github.sha }}\`
+          **Author:** ${{ github.actor }}
+
+          ---
+          ### Commit Message
+          $COMMIT_MSG
+
+          ---
+          > ⚠️ Please review the changes before merging.
+          EOF
+          )"
