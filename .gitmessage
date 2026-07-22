@@ -1,0 +1,21 @@
+# <type>(<scope>): <short summary>   ← 50 chars max, imperative mood
+#
+# Types: feat | fix | docs | style | refactor | perf | test | chore | ci | build
+# Example: feat(auth): add JWT refresh token support
+#
+# ── Description ────────────────────────────────────────────────
+# Explain WHAT changed and WHY (not how). Wrap at 72 chars.
+
+
+# ── Changes ────────────────────────────────────────────────────
+# - [ ] change one
+# - [ ] change two
+
+# ── Checklist ──────────────────────────────────────────────────
+# - [ ] Code builds & runs locally
+# - [ ] Tests added / updated
+# - [ ] Docs updated (if needed)
+# - [ ] No secrets / debug code committed
+
+# ── Footer ─────────────────────────────────────────────────────
+# Closes #<issue>   |   BREAKING CHANGE: <description>
