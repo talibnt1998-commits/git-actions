@@ -8,6 +8,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.get('/', (req, res) => {
   console.log('Received request at /');
+  console.log('Received request at /');
   res.json({
     message: 'Welcome to git-actions API',
     status: 'running',
